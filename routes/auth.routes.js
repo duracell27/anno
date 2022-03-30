@@ -56,7 +56,7 @@ router.post('/login', [
 
         const token = jwt.sign({ userId: user.id }, 'my anno aplication', { expiresIn: '1h' })
 
-        res.json({ token, userId, message: 'Реєстрація успішна' })
+        res.json({ token, userId: user.id, message: 'Реєстрація успішна' })
     } catch (err) {
         res.status(500).json({ message: 'Щось пішло не так при логіні' })
     }
