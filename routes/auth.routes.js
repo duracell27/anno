@@ -14,13 +14,13 @@ router.post('/registr', [
     try {
         const errors = validationResult(req, res);
         if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array(), message: 'Некоректно заповнені дані' })
+            return res.json({ errors: errors.array(), message: 'Некоректно заповнені дані'})
         }
 
         const { email, password } = req.body
         const checkExistsUser = await User.findOne({ email: email })
         if (checkExistsUser) {
-            return res.status(400).json({ message: 'Такий користувач вже існує' })
+            return res.json({ message: 'Такий користувач вже існує' })
         }
         const hashedPassword = await bcrypt.hash(password, 12)
         const user = new User({ email, password: hashedPassword })
@@ -37,26 +37,26 @@ router.post('/login', [
     check('password', 'Введіть пароль').exists()
 ], async (req, res) => {
     try {
+        
         const errors = validationResult(req, res);
         if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array(), message: 'Некоректно заповнені дані при вході' })
+            return res.json({ errors: errors.array(), message: 'Некоректно заповнені дані при вході' })
         }
-
         const { email, password } = req.body
 
         const checkExistsUser = await User.findOne({ email: email })
         if (!checkExistsUser) {
-            res.status(400).json({ message: 'Такого користувача немає' })
+            res.json({ message: 'Такого користувача немає' })
         }
 
-        const isPasswordMatch = await bcrypt.compare(password, user.password)
+        const isPasswordMatch = await bcrypt.compare(password, checkExistsUser.password)
         if (!isPasswordMatch) {
-            res.status(400).json({ message: 'Не правильний пароль' })
+            res.json({ message: 'Не правильний пароль' })
         }
 
-        const token = jwt.sign({ userId: user.id }, 'my anno aplication', { expiresIn: '1h' })
+        const token = await jwt.sign({ userId: checkExistsUser.id }, 'my anno aplication', { expiresIn: '1h' })
 
-        res.json({ token, userId: user.id, message: 'Реєстрація успішна' })
+        res.json({ token, userId: checkExistsUser.id, message: 'Реєстрація успішна' })
     } catch (err) {
         res.status(500).json({ message: 'Щось пішло не так при логіні' })
     }
