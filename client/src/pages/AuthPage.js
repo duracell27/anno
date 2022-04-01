@@ -1,7 +1,9 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import axios from 'axios'
+import { AuthContext } from '../context/AuthContext'
 
 export default function AuthPage() {
+    const auth = useContext(AuthContext)
 
     const [formData, setFormData] = useState({ email: '', password: '' })
     const [response, setResponse] = useState(null)
@@ -23,7 +25,10 @@ export default function AuthPage() {
             headers: {
                 'Content-Type': 'application/json',
             }
-        }).then(response => setResponse(response.data.message))
+        }).then(response => {
+            setResponse(response.data.message)
+            auth.login(response.data.token, response.data.userId)
+        })
     }
 
     return (
