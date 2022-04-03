@@ -3,6 +3,7 @@ import { BrowserRouter } from "react-router-dom";
 import { AuthContext } from "./context/AuthContext";
 import { useAuth } from "./hooks/auth.hook";
 import { useRoutes } from "./routes";
+import './app.scss'
 
 function App() {
   const { login, logout, token, userId } = useAuth();
@@ -11,7 +12,7 @@ function App() {
   return (
     <AuthContext.Provider value={{login, logout, token, userId, isAuthenticated}}>
       <BrowserRouter>
-        <div >
+        <div className="main">
           {routes}
         </div>
       </BrowserRouter>

@@ -1,0 +1,49 @@
+.main {
+  background-color: #f2d97c;
+}
+
+.resourcesContainer {
+  display: flex;
+  align-items: center;
+}
+.resourceCard {
+  height: 46px;
+  display: flex;
+  margin-bottom: 4px;
+}
+.resourceWrap {
+    padding: 6px 10px 0;
+    border: 1px solid;
+    border-radius: 20px;
+    margin: 0 5px;
+    height: 84px;
+  span {
+    text-align: center;
+    display: block;
+    font-weight: bold;
+    padding: 3px 0;
+    border: 1px solid #000;
+    border-radius: 20px
+  }
+  &:first-child {
+    .capacityWrap {
+      display: none;
+    }
+  }
+}
+
+.capacityWrap {
+  width: 10px;
+  border-radius: 2px;
+  height: 100%;
+  margin-left: 5px;
+  position: relative;
+  background-color: #8f6b3c;
+}
+
+.capacityBar {
+  position: absolute;
+  width: 10px;
+  background-color: #90bd42;
+  bottom: 0;
+}
