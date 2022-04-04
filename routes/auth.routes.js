@@ -60,42 +60,60 @@ router.post(
           },
         ],
       });
-    //   const buildingCosts = new BuildingCost({
-    //     buildings: [
-    //       {
-    //         name: "Склад",
-    //         resources: [
-    //           {
-    //             name: "Золото",
-    //             amount: 200,
-    //           },
-    //           {
-    //             name: "Дерево",
-    //             amount: 2,
-    //           },
-    //           {
-    //             name: "Інструменти",
-    //             amount: 3,
-    //           },
-    //         ],
-    //         expenses: 10,
-    //       },
-    //       {
-    //         name: "ХижинаЛісниика",
-    //         resources: [
-    //           {
-    //             name: "Золото",
-    //             amount: 50,
-    //           },
-    //           {
-    //             name: "Дерево",
-    //             amount: 2,
-    //           },
-    //         ],
-    //         expenses: 5,
-    //       },
-    //     ],
-    //   });
+      const buildingCosts = new BuildingCost({
+        buildings: [
+          {
+            name: "Склад",
+            resources: [
+              {
+                name: "Золото",
+                amount: 200,
+              },
+              {
+                name: "Дерево",
+                amount: 2,
+              },
+              {
+                name: "Інструменти",
+                amount: 3,
+              },
+            ],
+            expenses: 10,
+          },
+          {
+            name: "ХижинаЛісниика",
+            resources: [
+              {
+                name: "Золото",
+                amount: 50,
+              },
+              {
+                name: "Дерево",
+                amount: 2,
+              },
+            ],
+            expenses: 5,
+          },
+          {
+            name: "Склад",
+            resources: [
+              {
+                name: "Золото",
+                amount: 200,
+              },
+              {
+                name: "Дерево",
+                amount: 2,
+              },
+              {
+                name: "Інструменти",
+                amount: 3,
+              },
+            ],
+            expenses: 10,
+          },
+        ],
+      });
       
       await resources.save();
       // отриматиawait buildingCosts.save();
