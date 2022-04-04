@@ -6,11 +6,14 @@ const schema = new Schema({
   expenses: { type: Number, default: 10 },
   places: [
     {
-      buiId: { type: Types.ObjectId, ref: "LumberjackHut" },
-    }
+      produceSpeed: { type: Number },
+      produceName: { type: String },
+      name: { type: String },
+      expenses: { type: Number, },
+    },
   ],
   size: { type: Number, default: 16 },
-  name: { type: String, default: 'Склад' },
+  name: { type: String, default: "Склад" },
 });
 
 module.exports = model("Werehouse", schema);

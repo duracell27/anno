@@ -84,11 +84,14 @@ router.get("/lumberjackHut", async (req, res) => {
 
     const places = [];
     places.push({
-      buiId: mongoose.Types.ObjectId(lumberjackHut._id)
+      produceSpeed: lumberjackHut.produceSpeed,
+      produceName: lumberjackHut.produceName,
+      name: lumberjackHut.name,
+      expenses: lumberjackHut.expenses,
     })
     await Werehouse.findOneAndUpdate({
       _id: mongoose.Types.ObjectId(werehouseId),
-    }, { places: [...places] });
+    }, {$push: {places: places }});
 
     res.json({ bought: true, message: `Хижину Лісника побудовано` });
   } catch (err) {
