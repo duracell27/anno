@@ -109,6 +109,12 @@ export default function MainPage() {
                       <div onClick={() => buildLumberjackHut(werehouse._id)} className="building_wrap">
                         <img src={require(`../img/buildings/${buildPrice.name}.webp`)} alt="icon" />
                         <p>{buildPrice.name}</p>
+                        {buildPrice.resources.map((resource)=>(
+                          <div className="resourcesNeed">
+                            <img className='small_img' src={require(`../img/resources/${resource.name}.webp`)} alt="icon" />
+                            <p>{resource.amount}</p>
+                          </div>
+                        ))}
                       </div>
                     ))}
 
