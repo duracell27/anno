@@ -7,6 +7,7 @@ const schema = new Schema({
     produceName: {type: String, default: 'Дерево'},
     name: {type: String, default: 'ХижинаЛісниика'},
     expenses: {type: Number, default: 5},
+    size: {type: Number, default: 69}
 })
 
 module.exports = model('LumberjackHut', schema)

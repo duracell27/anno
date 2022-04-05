@@ -58,65 +58,142 @@ router.post(
             name: "Скло",
             amount: 0,
           },
-        ],
-      });
-      const buildingCosts = new BuildingCost({
-        buildings: [
           {
-            name: "Склад",
-            resources: [
-              {
-                name: "Золото",
-                amount: 200,
-              },
-              {
-                name: "Дерево",
-                amount: 2,
-              },
-              {
-                name: "Інструменти",
-                amount: 3,
-              },
-            ],
-            expenses: 10,
+            name: "Сидр",
+            amount: 0,
           },
           {
-            name: "ХижинаЛісниика",
-            resources: [
-              {
-                name: "Золото",
-                amount: 50,
-              },
-              {
-                name: "Дерево",
-                amount: 2,
-              },
-            ],
-            expenses: 5,
-          },
-          {
-            name: "Склад",
-            resources: [
-              {
-                name: "Золото",
-                amount: 200,
-              },
-              {
-                name: "Дерево",
-                amount: 2,
-              },
-              {
-                name: "Інструменти",
-                amount: 3,
-              },
-            ],
-            expenses: 10,
+            name: "Риба",
+            amount: 10,
           },
         ],
       });
+      // const buildingCosts = new BuildingCost({
+      //   buildings: [
+      //     {
+      //       name: "Склад",
+      //       resources: [
+      //         {
+      //           name: "Золото",
+      //           amount: 200,
+      //         },
+      //         {
+      //           name: "Дерево",
+      //           amount: 2,
+      //         },
+      //         {
+      //           name: "Інструменти",
+      //           amount: 3,
+      //         },
+      //       ],
+      //       expenses: 10,
+      //     },
+      //     {
+      //       name: "ХижинаЛісниика",
+      //       resources: [
+      //         {
+      //           name: "Золото",
+      //           amount: 50,
+      //         },
+      //         {
+      //           name: "Дерево",
+      //           amount: 2,
+      //         },
+      //       ],
+      //       expenses: 5,
+      //     },
+      //     {
+      //       name: "ХижинаРибака",
+      //       resources: [
+      //         {
+      //           name: "Золото",
+      //           amount: 100,
+      //         },
+      //         {
+      //           name: "Дерево",
+      //           amount: 3,
+      //         },
+      //         {
+      //           name: "Інструменти",
+      //           amount: 2,
+      //         },
+      //       ],
+      //       expenses: 15,
+      //     },
+      //     {
+      //       name: "РинковоПлоща",
+      //       resources: [
+      //         {
+      //           name: "Золото",
+      //           amount: 400,
+      //         },
+      //         {
+      //           name: "Дерево",
+      //           amount: 5,
+      //         },
+      //         {
+      //           name: "Інструменти",
+      //           amount: 3,
+      //         },
+      //       ],
+      //       expenses: 10,
+      //     },
+      //     {
+      //       name: "СидроВарня",
+      //       resources: [
+      //         {
+      //           name: "Золото",
+      //           amount: 400,
+      //         },
+      //         {
+      //           name: "Дерево",
+      //           amount: 5,
+      //         },
+      //         {
+      //           name: "Інструменти",
+      //           amount: 1,
+      //         },
+      //       ],
+      //       expenses: 15,
+      //     },
+      //     {
+      //       name: "Часовня",
+      //       resources: [
+      //         {
+      //           name: "Золото",
+      //           amount: 1500,
+      //         },
+      //         {
+      //           name: "Дерево",
+      //           amount: 12,
+      //         },
+      //         {
+      //           name: "Інструменти",
+      //           amount: 5,
+      //         },
+      //       ],
+      //       expenses: 15,
+      //     },
+      //     {
+      //       name: "СелянськаХата",
+      //       resources: [
+      //         {
+      //           name: "Золото",
+      //           amount: 0,
+      //         },
+      //         {
+      //           name: "Дерево",
+      //           amount: 2,
+      //         },
+      //       ],
+      //       expenses: 0,
+      //     },
+      //   ],
+      // });
       
       await resources.save();
-      // отриматиawait buildingCosts.save();
+      // одноразове отримати список цін на будівлі
+      // await buildingCosts.save();
       res.status(201).json({ message: "Реєстрація успішна" });
     } catch (err) {
       res.status(500).json({ message: "Щось пішло не так при реєстрації" });

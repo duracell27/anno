@@ -6,6 +6,7 @@ export default function MainPage() {
   const auth = useContext(AuthContext);
   const [resources, setResources] = useState([]);
   const [werehouses, setWerehouses] = useState([]);
+  const [buildingPrices, setBuildingPrices] = useState([]);
   const [werehouseCapacity, setWerehouseCapacity] = useState(0);
   const [showBuildings, setShowBuildings] = useState({ show: false, index: null });
   const showBuildingsHandler = (index) => {
@@ -24,6 +25,13 @@ export default function MainPage() {
       setWerehouses([...response.data.werehouseList])
     });
   };
+  const getBuildingsForBuild = () => {
+    axios.get(`/api/buildingsforbuild?industrial=true`).then((response) => {
+      setBuildingPrices([...response.data.buildingsArray])
+    });
+  };
+
+
 
   const buildWerehouse = useCallback(() => {
     axios.get(`/api/build/werehouse?userId=${auth.userId}`).then(
@@ -54,6 +62,7 @@ export default function MainPage() {
   useEffect(() => {
     getResourcesList();
     getResidentialIndustries()
+    getBuildingsForBuild()
   }, []);
 
   return (
@@ -94,12 +103,16 @@ export default function MainPage() {
               ))}
               {werehouse.places.length < 3 ? (<div className="werehouseBuildings_img">
                 <img onClick={() => showBuildingsHandler(index)} src={require(`../img/buildings/Пусто.webp`)} alt="icon" />
-                {showBuildings.index === index && showBuildings.show ? (<div className="allBuildings">
-                  <div onClick={() => buildLumberjackHut(werehouse._id)} className="building_wrap">
-                    <img src={require(`../img/buildings/ХижинаЛісниика.webp`)} alt="icon" />
-                    <p>Хижина лісника</p>
-                  </div>
-                </div>) : null}
+                {showBuildings.index === index && showBuildings.show ? (
+                  <div className="allBuildings">
+                    {buildingPrices.map((buildPrice) => (
+                      <div onClick={() => buildLumberjackHut(werehouse._id)} className="building_wrap">
+                        <img src={require(`../img/buildings/${buildPrice.name}.webp`)} alt="icon" />
+                        <p>{buildPrice.name}</p>
+                      </div>
+                    ))}
+
+                  </div>) : null}
               </div>) : null}
             </div>
           </div>
