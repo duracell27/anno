@@ -5,6 +5,7 @@ const { check, validationResult } = require("express-validator");
 const User = require("../models/user");
 const Resources = require("../models/resources");
 const BuildingCost = require("../models/buildingCost");
+const TikResources = require("../models/tikResources");
 const router = new Router();
 
 // Реєстрація
@@ -68,6 +69,42 @@ router.post(
           },
         ],
       });
+
+      const tikResources = await new TikResources({
+        userId: user._id,
+        tikResources: [
+          {
+            name: "Золото",
+            value: 0,
+          },
+          {
+            name: "Дерево",
+            value: 0,
+          },
+          {
+            name: "Інструменти",
+            value: 0,
+          },
+          {
+            name: "Камінь",
+            value: 0,
+          },
+          {
+            name: "Скло",
+            value: 0,
+          },
+          {
+            name: "Сидр",
+            value: 0,
+          },
+          {
+            name: "Риба",
+            value: 0,
+          },
+        ],
+      })
+
+      await tikResources.save()
       // const buildingCosts = new BuildingCost({
       //   buildings: [
       //     {

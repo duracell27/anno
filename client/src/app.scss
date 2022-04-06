@@ -6,17 +6,20 @@
   display: flex;
   align-items: center;
 }
+
 .resourceCard {
   height: 46px;
   display: flex;
   margin-bottom: 4px;
 }
+
 .resourceWrap {
-    padding: 6px 10px 0;
-    border: 1px solid;
-    border-radius: 20px;
-    margin: 0 5px;
-    height: 84px;
+  padding: 6px 10px 0;
+  border: 1px solid;
+  border-radius: 20px;
+  margin: 0 5px;
+  height: 84px;
+
   span {
     text-align: center;
     display: block;
@@ -25,6 +28,7 @@
     border: 1px solid #000;
     border-radius: 20px
   }
+
   &:first-child {
     .capacityWrap {
       display: none;
@@ -50,34 +54,49 @@
 
 // склади
 
-.werehouseWrap{
+.werehouseWrap {
   display: flex;
   align-items: center;
-  .werehouseImg{
-    img{
+
+  .werehouseImg {
+    img {
       width: 170px;
     }
   }
-  .werehouseBuildings{
+
+  .werehouseBuildings {
     display: flex;
-    .werehouseBuildings_img{
+
+    .werehouseBuildings_img {
       position: relative;
-      img{
+
+      img {
         cursor: pointer;
         width: 70px;
       }
     }
-    .building_wrap{
-      
+
+    .building_wrap {
+
       border: 1px solid #8f6b3c;
       border-radius: 10px;
       display: flex;
       padding-right: 10px;
-      p{
+      margin: 2px 0;
+      
+
+      .small_img {
+        width: 17px;
+        height: 17px;
+        margin-right: 5px;
+      }
+
+      p {
         white-space: nowrap;
       }
     }
-    .allBuildings{
+
+    .allBuildings {
       background: rgb(206, 197, 118);
       padding: 6px;
       position: absolute;
@@ -86,8 +105,16 @@
     }
   }
 }
-.small_img{
-  width: 17px;
-  height: 17px;
-  margin-right: 5px;
+
+.reresourcesNeedWrap {
+  display: flex;
+  flex-direction: column;
+  margin-left: 10px;
+  .resourcesNeed {
+    width: 100px;
+    p.small {
+      display: inline-block;
+      margin: 0;
+    }
+  }
 }

@@ -38,6 +38,7 @@ export default function MainPage() {
       (response) => {
         if (response.data.bought) {
           getResourcesList();
+          getResidentialIndustries();
         } else {
           alert(response.data.message);
         }
@@ -46,17 +47,45 @@ export default function MainPage() {
     );
   });
 
-  const buildLumberjackHut = useCallback((werehouseId) => {
-    axios.get(`/api/build/lumberjackHut?userId=${auth.userId}&werehouseId=${werehouseId}`).then(
-      (response) => {
-        if (response.data.bought) {
-          getResourcesList();
-        } else {
-          alert(response.data.message);
-        }
-      },
-      [auth.userId]
-    );
+  const buildInWerehouse = useCallback((werehouseId, buildingName) => {
+    if (buildingName === "ХижинаЛісниика") {
+      axios.get(`/api/build/lumberjackHut?userId=${auth.userId}&werehouseId=${werehouseId}`).then(
+        (response) => {
+          if (response.data.bought) {
+            getResourcesList()
+            getResidentialIndustries();
+          } else {
+            alert(response.data.message)
+          }
+        },
+        [auth.userId]
+      )
+    } else if (buildingName === "ХижинаРибака") {
+      axios.get(`/api/build/fishermanHut?userId=${auth.userId}&werehouseId=${werehouseId}`).then(
+        (response) => {
+          if (response.data.bought) {
+            getResourcesList()
+            getResidentialIndustries();
+          } else {
+            alert(response.data.message)
+          }
+        },
+        [auth.userId]
+      )
+    } else if (buildingName === "СидроВарня") {
+      axios.get(`/api/build/cider?userId=${auth.userId}&werehouseId=${werehouseId}`).then(
+        (response) => {
+          if (response.data.bought) {
+            getResourcesList()
+            getResidentialIndustries();
+          } else {
+            alert(response.data.message)
+          }
+        },
+        [auth.userId]
+      )
+    }
+
   });
 
   useEffect(() => {
@@ -103,18 +132,22 @@ export default function MainPage() {
               ))}
               {werehouse.places.length < 3 ? (<div className="werehouseBuildings_img">
                 <img onClick={() => showBuildingsHandler(index)} src={require(`../img/buildings/Пусто.webp`)} alt="icon" />
+                <p>Побудувати</p>
                 {showBuildings.index === index && showBuildings.show ? (
                   <div className="allBuildings">
                     {buildingPrices.map((buildPrice) => (
-                      <div onClick={() => buildLumberjackHut(werehouse._id)} className="building_wrap">
+                      <div onClick={() => buildInWerehouse(werehouse._id, buildPrice.name)} className="building_wrap">
                         <img src={require(`../img/buildings/${buildPrice.name}.webp`)} alt="icon" />
                         <p>{buildPrice.name}</p>
-                        {buildPrice.resources.map((resource)=>(
-                          <div className="resourcesNeed">
-                            <img className='small_img' src={require(`../img/resources/${resource.name}.webp`)} alt="icon" />
-                            <p>{resource.amount}</p>
-                          </div>
-                        ))}
+                        <div className="reresourcesNeedWrap">
+
+                          {buildPrice.resources.map((resource) => (
+                            <div className="resourcesNeed">
+                              <img className='small_img' src={require(`../img/resources/${resource.name}.webp`)} alt="icon" />
+                              <p className='small'>{resource.amount}</p>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     ))}
 
