@@ -88,10 +88,25 @@ export default function MainPage() {
 
   });
 
+  const tikResources = () => {
+    axios.get(`/api/tik/?userId=${auth.userId}`).then((response) => {
+      if(response.data.ok) {
+        getResourcesList();
+      }
+    });
+  }
+
+
+
   useEffect(() => {
     getResourcesList();
     getResidentialIndustries()
     getBuildingsForBuild()
+    
+    setInterval(()=>{
+      tikResources()
+    }, 60000)
+    
   }, []);
 
   return (
