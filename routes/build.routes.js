@@ -15,7 +15,7 @@ router.get("/werehouse", async (req, res) => {
     const { userId } = req.query;
 
     const buildCost = await BuildingCost.findOne();
-    // const tikResources = await TikResources.findOne({userId: mongoose.Types.ObjectId(userId)});
+    const tikResources = await TikResources.findOne({userId: mongoose.Types.ObjectId(userId)});
 
     const needForBuild = buildCost.buildings.filter(
       (build) => build.name === "Склад"
@@ -42,8 +42,14 @@ router.get("/werehouse", async (req, res) => {
       userId: mongoose.Types.ObjectId(userId),
       places: []
     })
+    
+    tikResources.tikResources.map((resource)=>{
+      if(resource.name === 'Золото'){
+        return resource.value = resource.value - buildCost.buildings[0].expenses
+      }
+    })
 
-    await TikResources.findOneAndUpdate({userId: mongoose.Types.ObjectId(userId), 'tikResources.name': 'Золото'}, {'tikResources[0].value': 10});
+    await TikResources.findOneAndUpdate({userId: mongoose.Types.ObjectId(userId)}, {tikResources: tikResources.tikResources});
     await werehouse.save();
 
     res.json({ bought: true, message: `Склад побудовано` });
@@ -59,7 +65,9 @@ router.get("/lumberjackHut", async (req, res) => {
     const { userId, werehouseId } = req.query;
 
     const buildCost = await BuildingCost.findOne();
-
+    const tikResources = await TikResources.findOne({userId: mongoose.Types.ObjectId(userId)});
+    const lumberjackHutProduce = await LumberjackHut.findOne({userId: mongoose.Types.ObjectId(userId)});
+    
     const needForBuild = buildCost.buildings.filter(
       (build) => build.name === "ХижинаЛісниика"
     )[0].resources;
@@ -99,6 +107,17 @@ router.get("/lumberjackHut", async (req, res) => {
       _id: mongoose.Types.ObjectId(werehouseId),
     }, {$push: {places: places }});
 
+    tikResources.tikResources.map((resource)=>{
+      if(resource.name === 'Золото'){
+        resource.value = resource.value - buildCost.buildings[1].expenses
+      }
+      if(resource.name === 'Дерево'){
+        resource.value = resource.value + lumberjackHutProduce.produceSpeed
+      }
+    })
+
+    await TikResources.findOneAndUpdate({userId: mongoose.Types.ObjectId(userId)}, {tikResources: tikResources.tikResources});
+
     res.json({ bought: true, message: `Хижину Лісника побудовано` });
   } catch (err) {
     res
@@ -113,6 +132,7 @@ router.get("/fishermanHut", async (req, res) => {
     const { userId, werehouseId } = req.query;
 
     const buildCost = await BuildingCost.findOne();
+    const tikResources = await TikResources.findOne({userId: mongoose.Types.ObjectId(userId)});
 
     const needForBuild = buildCost.buildings.filter(
       (build) => build.name === "ХижинаРибака"
@@ -153,6 +173,14 @@ router.get("/fishermanHut", async (req, res) => {
       _id: mongoose.Types.ObjectId(werehouseId),
     }, {$push: {places: places }});
 
+    tikResources.tikResources.map((resource)=>{
+      if(resource.name === 'Золото'){
+        return resource.value = resource.value - buildCost.buildings[2].expenses
+      }
+    })
+
+    await TikResources.findOneAndUpdate({userId: mongoose.Types.ObjectId(userId)}, {tikResources: tikResources.tikResources});
+
     res.json({ bought: true, message: `Хижину Рибака побудовано` });
   } catch (err) {
     res
@@ -167,6 +195,7 @@ router.get("/cider", async (req, res) => {
     const { userId, werehouseId } = req.query;
 
     const buildCost = await BuildingCost.findOne();
+    const tikResources = await TikResources.findOne({userId: mongoose.Types.ObjectId(userId)});
 
     const needForBuild = buildCost.buildings.filter(
       (build) => build.name === "СидроВарня"
@@ -206,6 +235,14 @@ router.get("/cider", async (req, res) => {
     await Werehouse.findOneAndUpdate({
       _id: mongoose.Types.ObjectId(werehouseId),
     }, {$push: {places: places }});
+
+    tikResources.tikResources.map((resource)=>{
+      if(resource.name === 'Золото'){
+        return resource.value = resource.value - buildCost.buildings[4].expenses
+      }
+    })
+
+    await TikResources.findOneAndUpdate({userId: mongoose.Types.ObjectId(userId)}, {tikResources: tikResources.tikResources});
 
     res.json({ bought: true, message: `СидроВарня побудовано` });
   } catch (err) {
