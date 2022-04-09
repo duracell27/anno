@@ -7,20 +7,32 @@ const router = new Router();
 router.get("/", async (req, res) => {
   try {
     const { industrial } = req.query;
-    
-    const buildingNames = []
+
+    const buildingNames = [];
 
     // if (industrial) {
     //   buildingNames = ['ХижинаРибака', 'ХижинаЛісниика', 'СидроВарня']
     // } else {
     //   buildingNames = ['Часовня', 'СелянськаХата']
     // }
-    
-    const buildingsForBuild = await BuildingCost.find();
-   
-    var buildingsArray = buildingsForBuild[0].buildings.filter((building)=>building.name === 'ХижинаРибака' || building.name === 'ХижинаЛісниика' || building.name === 'СидроВарня' )
 
-    res.json({ buildingsArray});
+    const buildingsForBuild = await BuildingCost.find();
+
+    if (industrial) {
+      var buildingsArray = buildingsForBuild[0].buildings.filter(
+        (building) =>
+          building.name === "ХижинаРибака" ||
+          building.name === "ХижинаЛісниика" ||
+          building.name === "СидроВарня"
+      );
+    } else {
+      var buildingsArray = buildingsForBuild[0].buildings.filter(
+        (building) =>
+          building.name === "Часовня" || building.name === "СелянськаХата"
+      );
+    }
+
+    res.json({ buildingsArray });
   } catch (err) {
     res
       .status(500)

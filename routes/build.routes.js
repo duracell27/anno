@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const { Router } = require("express");
 const Resources = require("../models/resources");
 const Werehouse = require("../models/werehouse");
+const Marketplace = require("../models/marketplace");
 const BuildingCost = require("../models/buildingCost");
 const LumberjackHut = require("../models/lumberjackHut");
 const FishermanHut = require("../models/fishermanHut");
@@ -59,6 +60,58 @@ router.get("/werehouse", async (req, res) => {
       .json({ message: "Щось пішло не так при формуванні ресурсів" });
   }
 });
+// побудувати маркет
+router.get("/marketplace", async (req, res) => {
+  try {
+    const { userId } = req.query;
+
+    const buildCost = await BuildingCost.findOne();
+    const tikResources = await TikResources.findOne({userId: mongoose.Types.ObjectId(userId)});
+
+    const needForBuild = buildCost.buildings.filter(
+      (build) => build.name === "РинковаПлоща"
+    )[0].resources;
+
+    const resources = await Resources.findOne({
+      userId: mongoose.Types.ObjectId(userId),
+    });
+
+    const updatedResources = [...resources.resources]
+
+    for (let i = 0; i < needForBuild.length; i++) {
+      if (resources.resources[i].amount - needForBuild[i].amount <= 0) {
+        return res.json({ bought: false, message: `У вас не достаньо ${resources.resources[i].name}` });
+      }
+      updatedResources[i].amount = resources.resources[i].amount - needForBuild[i].amount
+    }
+
+    await Resources.findOneAndUpdate({
+      userId: mongoose.Types.ObjectId(userId),
+    }, { resources: updatedResources });
+
+
+    const marketplace = new Marketplace({
+      userId: mongoose.Types.ObjectId(userId),
+      places: [],
+      residentPlaces: []
+    })
+    
+    tikResources.tikResources.map((resource)=>{
+      if(resource.name === 'Золото'){
+        return resource.value = resource.value - buildCost.buildings[3].expenses
+      }
+    })
+
+    await TikResources.findOneAndUpdate({userId: mongoose.Types.ObjectId(userId)}, {tikResources: tikResources.tikResources});
+    await marketplace.save();
+
+    res.json({ bought: true, message: `Ринкова Площа побудовано` });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Щось пішло не так при будуванні ринкової площі" });
+  }
+});
 // побудувати ХижинаЛісниика
 router.get("/lumberjackHut", async (req, res) => {
   try {
@@ -107,11 +160,14 @@ router.get("/lumberjackHut", async (req, res) => {
       _id: mongoose.Types.ObjectId(werehouseId),
     }, {$push: {places: places }});
 
+    console.log('деревопродюс', lumberjackHutProduce.produceSpeed)
+
     tikResources.tikResources.map((resource)=>{
       if(resource.name === 'Золото'){
         resource.value = resource.value - buildCost.buildings[1].expenses
       }
       if(resource.name === 'Дерево'){
+        console.log('дерево')
         resource.value = resource.value + lumberjackHutProduce.produceSpeed
       }
     })

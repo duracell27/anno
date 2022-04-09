@@ -13,6 +13,8 @@ router.get("/", async (req, res) => {
       userId: mongoose.Types.ObjectId(userId),
     });
 
+  
+
     const tikAmount = await TikResources.find({
       userId: mongoose.Types.ObjectId(userId),
     });
@@ -22,7 +24,11 @@ router.get("/", async (req, res) => {
     for (let i = 0; i < resourcesList[0].resources.length; i++) {
 
       if (resourcesList[0].resources[i].name === tikAmount[0].tikResources[i].name) {
-        updatedResources[i].amount = resourcesList[0].resources[i].amount + tikAmount[0].tikResources[i].value
+        if(resourcesList[0].resources[i].amount + tikAmount[0].tikResources[i].value > resourcesList[0].resourcesCapacity && resourcesList[0].resources[i].name !== 'Золото'){
+          updatedResources[i].amount = resourcesList[0].resourcesCapacity
+        }else{
+          updatedResources[i].amount = resourcesList[0].resources[i].amount + tikAmount[0].tikResources[i].value
+        }
       }
     }
 

@@ -158,7 +158,7 @@ router.post(
       //       expenses: 15,
       //     },
       //     {
-      //       name: "РинковоПлоща",
+      //       name: "РинковаПлоща",
       //       resources: [
       //         {
       //           name: "Золото",

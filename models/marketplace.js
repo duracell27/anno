@@ -23,7 +23,7 @@ const schema = new Schema({
     },
   ],
   size: { type: Number, default: 30 },
-  name: { type: String, default: "РинковоПлоща" },
+  name: { type: String, default: "РинковаПлоща" },
 });
 
 module.exports = model("Marketplace", schema);

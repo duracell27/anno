@@ -6,7 +6,9 @@ export default function MainPage() {
   const auth = useContext(AuthContext);
   const [resources, setResources] = useState([]);
   const [werehouses, setWerehouses] = useState([]);
-  const [buildingPrices, setBuildingPrices] = useState([]);
+  const [marketplaces, setMarketplaces] = useState([]);
+  const [buildingPricesInd, setBuildingPricesInd] = useState([]);
+  const [buildingPricesRes, setBuildingPricesRes] = useState([]);
   const [werehouseCapacity, setWerehouseCapacity] = useState(0);
   const [showBuildings, setShowBuildings] = useState({ show: false, index: null });
   const showBuildingsHandler = (index) => {
@@ -24,10 +26,16 @@ export default function MainPage() {
     axios.get(`/api/buildings/werehouse?userId=${auth.userId}`).then((response) => {
       setWerehouses([...response.data.werehouseList])
     });
+    axios.get(`/api/buildings/marketplace?userId=${auth.userId}`).then((response) => {
+      setMarketplaces([...response.data.marketplaceList])
+    });
   };
   const getBuildingsForBuild = () => {
     axios.get(`/api/buildingsforbuild?industrial=true`).then((response) => {
-      setBuildingPrices([...response.data.buildingsArray])
+      setBuildingPricesInd([...response.data.buildingsArray])
+    });
+    axios.get(`/api/buildingsforbuild?industrial=false`).then((response) => {
+      setBuildingPricesRes([...response.data.buildingsArray])
     });
   };
 
@@ -35,6 +43,20 @@ export default function MainPage() {
 
   const buildWerehouse = useCallback(() => {
     axios.get(`/api/build/werehouse?userId=${auth.userId}`).then(
+      (response) => {
+        if (response.data.bought) {
+          getResourcesList();
+          getResidentialIndustries();
+        } else {
+          alert(response.data.message);
+        }
+      },
+      [auth.userId]
+    );
+  });
+
+  const buildMarketplace = useCallback(() => {
+    axios.get(`/api/build/marketplace?userId=${auth.userId}`).then(
       (response) => {
         if (response.data.bought) {
           getResourcesList();
@@ -101,7 +123,7 @@ export default function MainPage() {
   useEffect(() => {
     getResourcesList();
     getResidentialIndustries()
-    getBuildingsForBuild()
+    getBuildingsForBuild();
     
     setInterval(()=>{
       tikResources()
@@ -133,25 +155,26 @@ export default function MainPage() {
         ))}
       </div>
       <div className="industrialContainer">
-        {werehouses.map((werehouse, index) => (
+        <div className="residential">
+        {marketplaces.map((marketplace, index) => (
           <div className="werehouseWrap" key={index}>
             <div className="werehouseImg">
-              <img src={require(`../img/buildings/${werehouse.name}.webp`)}
+              <img src={require(`../img/buildings/${marketplace.name}.webp`)}
                 alt="icon" />
             </div>
             <div className="werehouseBuildings">
-              {werehouse.places.map((place) => (
+              {marketplace.places.map((place) => (
                 <div className="werehouseBuildings_img">
                   <img src={require(`../img/buildings/${place.name}.webp`)} alt="icon" />
                 </div>
               ))}
-              {werehouse.places.length < 3 ? (<div className="werehouseBuildings_img">
+              {marketplace.places.length < 1 ? (<div className="werehouseBuildings_img">
                 <img onClick={() => showBuildingsHandler(index)} src={require(`../img/buildings/Пусто.webp`)} alt="icon" />
                 <p>Побудувати</p>
                 {showBuildings.index === index && showBuildings.show ? (
                   <div className="allBuildings">
-                    {buildingPrices.map((buildPrice) => (
-                      <div onClick={() => buildInWerehouse(werehouse._id, buildPrice.name)} className="building_wrap">
+                    {buildingPricesRes.map((buildPrice) => (
+                      <div onClick={() => buildInWerehouse(marketplace._id, buildPrice.name)} className="building_wrap">
                         <img src={require(`../img/buildings/${buildPrice.name}.webp`)} alt="icon" />
                         <p>{buildPrice.name}</p>
                         <div className="reresourcesNeedWrap">
@@ -171,7 +194,48 @@ export default function MainPage() {
             </div>
           </div>
         ))}
+        </div>
+      <div className="industrial">{werehouses.map((werehouse, index) => (
+          <div className="werehouseWrap" key={index}>
+            <div className="werehouseImg">
+              <img src={require(`../img/buildings/${werehouse.name}.webp`)}
+                alt="icon" />
+            </div>
+            <div className="werehouseBuildings">
+              {werehouse.places.map((place) => (
+                <div className="werehouseBuildings_img">
+                  <img src={require(`../img/buildings/${place.name}.webp`)} alt="icon" />
+                </div>
+              ))}
+              {werehouse.places.length < 3 ? (<div className="werehouseBuildings_img">
+                <img onClick={() => showBuildingsHandler(index)} src={require(`../img/buildings/Пусто.webp`)} alt="icon" />
+                <p>Побудувати</p>
+                {showBuildings.index === index && showBuildings.show ? (
+                  <div className="allBuildings">
+                    {buildingPricesInd.map((buildPrice) => (
+                      <div onClick={() => buildInWerehouse(werehouse._id, buildPrice.name)} className="building_wrap">
+                        <img src={require(`../img/buildings/${buildPrice.name}.webp`)} alt="icon" />
+                        <p>{buildPrice.name}</p>
+                        <div className="reresourcesNeedWrap">
+
+                          {buildPrice.resources.map((resource) => (
+                            <div className="resourcesNeed">
+                              <img className='small_img' src={require(`../img/resources/${resource.name}.webp`)} alt="icon" />
+                              <p className='small'>{resource.amount}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+
+                  </div>) : null}
+              </div>) : null}
+            </div>
+          </div>
+        ))}</div>
+        
         <button onClick={buildWerehouse}>купити склад</button>
+        <button onClick={buildMarketplace}>купити Ринкову Площу</button>
       </div>
     </div>
   );
