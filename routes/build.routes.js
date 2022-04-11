@@ -9,6 +9,7 @@ const FishermanHut = require("../models/fishermanHut");
 const Cider = require("../models/cider");
 const TikResources = require("../models/tikResources");
 const Chapel = require("../models/chapel");
+const PeasantHut = require("../models/peasantHut");
 const router = new Router();
 
 // побудувати склад
@@ -370,5 +371,68 @@ router.get("/chapel", async (req, res) => {
   }
 });
 
+// побудувати СелянськаХата
+router.get("/peasantHut", async (req, res) => {
+  try {
+    const { userId, marketplaceId } = req.query;
+
+    const buildCost = await BuildingCost.findOne();
+
+    const needForBuild = buildCost.buildings.filter(
+      (build) => build.name === "СелянськаХата"
+    )[0].resources;
+
+    const resources = await Resources.findOne({
+      userId: mongoose.Types.ObjectId(userId),
+    });
+
+    const updatedResources = [...resources.resources]
+
+    for (let i = 0; i < needForBuild.length; i++) {
+      if (resources.resources[i].amount - needForBuild[i].amount <= 0) {
+        return res.json({ bought: false, message: `У вас не достаньо ${resources.resources[i].name}` });
+      }
+      updatedResources[i].amount = resources.resources[i].amount - needForBuild[i].amount
+    }
+
+    await Resources.findOneAndUpdate({
+      userId: mongoose.Types.ObjectId(userId),
+    }, { resources: updatedResources });
+
+    const peasantHut = new PeasantHut({
+      userId: mongoose.Types.ObjectId(userId),
+      marketplaceId: mongoose.Types.ObjectId(marketplaceId),
+      needs: [
+        {
+          name: 'Риба', 
+          percent: 0
+        },{
+          name: 'Сидр', 
+          percent: 0
+        },{
+          name: 'Часовня', 
+          percent: 0
+        }
+      ]
+    })
+    await peasantHut.save();
+
+    const places = [];
+    places.push({
+      name: peasantHut.name,
+      size: peasantHut.size,
+    })
+    await Marketplace.findOneAndUpdate({
+      _id: mongoose.Types.ObjectId(marketplaceId),
+    }, {$push: {residentPlaces: places }});
+
+
+    res.json({ bought: true, message: `СидроВарня побудовано` });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Щось пішло не так при будуванні СидроВарня" });
+  }
+});
 
 module.exports = router;

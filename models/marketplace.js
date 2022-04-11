@@ -14,13 +14,15 @@ const schema = new Schema({
     {
       name: { type: String, default: 'СелянськаХата' },
       peasant: { type: Number, default: 1 },
+      peasantMax: { type: Number, default: 8 },
       needs: [
         {
           name: { type: String },
           percent: { type: Number, default: 0 }
         }
       ],
-      tax: { type: Number, default: 59 }
+      tax: { type: Number, default: 59 },
+      size: { type: Number, default: 9 },
     },
   ],
   size: { type: Number, default: 30 },

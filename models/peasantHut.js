@@ -7,6 +7,7 @@ const schema = new Schema({
     expenses: {type: Number, default: 0},
     size: {type: Number, default: 9},
     peasant: {type: Number, default: 1},
+    peasantMax: {type: Number, default: 8},
     needs: [
         {
             name: {type: String},

@@ -36,7 +36,7 @@ router.get("/", async (req, res) => {
       userId: mongoose.Types.ObjectId(userId),
     }, { resources: updatedResources });
 
-    res.json({ ok: true });
+    res.json({ ok: true, tikAmount});
 
   } catch (err) {
     res
