@@ -9,6 +9,7 @@ export default function MainPage() {
   const [marketplaces, setMarketplaces] = useState([]);
   const [buildingPricesInd, setBuildingPricesInd] = useState([]);
   const [buildingPricesRes, setBuildingPricesRes] = useState([]);
+  const [buildingPricesHouse, setBuildingPricesHouse] = useState([]);
   const [werehouseCapacity, setWerehouseCapacity] = useState(0);
   const [showBuildings, setShowBuildings] = useState({ show: false, index: null });
   const showBuildingsHandler = (index) => {
@@ -31,12 +32,16 @@ export default function MainPage() {
     });
   };
   const getBuildingsForBuild = () => {
-    axios.get(`/api/buildingsforbuild?industrial=true`).then((response) => {
+    axios.get(`/api/buildingsforbuild?industrial=industrial`).then((response) => {
       setBuildingPricesInd([...response.data.buildingsArray])
+      axios.get(`/api/buildingsforbuild?industrial=residential`).then((response) => {
+        setBuildingPricesRes([...response.data.buildingsArray])
+        axios.get(`/api/buildingsforbuild?industrial=house`).then((response) => {
+          setBuildingPricesHouse([...response.data.buildingsArray])
+        });
+      });
     });
-    axios.get(`/api/buildingsforbuild?industrial=false`).then((response) => {
-      setBuildingPricesRes([...response.data.buildingsArray])
-    });
+    
   };
 
 
@@ -110,6 +115,23 @@ export default function MainPage() {
 
   });
 
+  const buildInMarketplace = useCallback((marketplaceId, buildingName) => {
+    if (buildingName === "Часовня") {
+      axios.get(`/api/build/chapel?userId=${auth.userId}&marketplaceId=${marketplaceId}`).then(
+        (response) => {
+          if (response.data.bought) {
+            getResourcesList()
+            getResidentialIndustries();
+          } else {
+            alert(response.data.message)
+          }
+        },
+        [auth.userId]
+      )
+    }
+
+  });
+
   const tikResources = () => {
     axios.get(`/api/tik/?userId=${auth.userId}`).then((response) => {
       if(response.data.ok) {
@@ -163,6 +185,7 @@ export default function MainPage() {
                 alt="icon" />
             </div>
             <div className="werehouseBuildings">
+              <p>Зона резедентських будівель</p>
               {marketplace.places.map((place) => (
                 <div className="werehouseBuildings_img">
                   <img src={require(`../img/buildings/${place.name}.webp`)} alt="icon" />
@@ -174,7 +197,7 @@ export default function MainPage() {
                 {showBuildings.index === index && showBuildings.show ? (
                   <div className="allBuildings">
                     {buildingPricesRes.map((buildPrice) => (
-                      <div onClick={() => buildInWerehouse(marketplace._id, buildPrice.name)} className="building_wrap">
+                      <div onClick={() => buildInMarketplace(marketplace._id, buildPrice.name)} className="building_wrap">
                         <img src={require(`../img/buildings/${buildPrice.name}.webp`)} alt="icon" />
                         <p>{buildPrice.name}</p>
                         <div className="reresourcesNeedWrap">

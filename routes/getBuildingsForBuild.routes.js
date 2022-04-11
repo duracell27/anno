@@ -8,29 +8,34 @@ router.get("/", async (req, res) => {
   try {
     const { industrial } = req.query;
 
-    const buildingNames = [];
-
-    // if (industrial) {
-    //   buildingNames = ['ХижинаРибака', 'ХижинаЛісниика', 'СидроВарня']
-    // } else {
-    //   buildingNames = ['Часовня', 'СелянськаХата']
-    // }
-
     const buildingsForBuild = await BuildingCost.find();
+    let buildingsArray = []
 
-    if (industrial) {
-      var buildingsArray = buildingsForBuild[0].buildings.filter(
+
+    if (industrial === 'industrial') {
+      buildingsArray = buildingsForBuild[0].buildings.filter(
         (building) =>
           building.name === "ХижинаРибака" ||
           building.name === "ХижинаЛісниика" ||
           building.name === "СидроВарня"
       );
-    } else {
-      var buildingsArray = buildingsForBuild[0].buildings.filter(
+    }
+
+
+    if (industrial === 'residential') {
+      buildingsArray = buildingsForBuild[0].buildings.filter(
         (building) =>
-          building.name === "Часовня" || building.name === "СелянськаХата"
+          building.name === "Часовня"
       );
     }
+
+    if (industrial === 'house') {
+      buildingsArray = buildingsForBuild[0].buildings.filter(
+        (building) =>
+          building.name === "СелянськаХата"
+      );
+    }
+
 
     res.json({ buildingsArray });
   } catch (err) {

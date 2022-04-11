@@ -8,6 +8,7 @@ const LumberjackHut = require("../models/lumberjackHut");
 const FishermanHut = require("../models/fishermanHut");
 const Cider = require("../models/cider");
 const TikResources = require("../models/tikResources");
+const Chapel = require("../models/chapel");
 const router = new Router();
 
 // побудувати склад
@@ -295,6 +296,67 @@ router.get("/cider", async (req, res) => {
     tikResources.tikResources.map((resource)=>{
       if(resource.name === 'Золото'){
         return resource.value = resource.value - buildCost.buildings[4].expenses
+      }
+    })
+
+    await TikResources.findOneAndUpdate({userId: mongoose.Types.ObjectId(userId)}, {tikResources: tikResources.tikResources});
+
+    res.json({ bought: true, message: `СидроВарня побудовано` });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Щось пішло не так при будуванні СидроВарня" });
+  }
+});
+
+// побудувати Часовня
+router.get("/chapel", async (req, res) => {
+  try {
+    const { userId, marketplaceId } = req.query;
+
+    const buildCost = await BuildingCost.findOne();
+    const tikResources = await TikResources.findOne({userId: mongoose.Types.ObjectId(userId)});
+
+    const needForBuild = buildCost.buildings.filter(
+      (build) => build.name === "Часовня"
+    )[0].resources;
+
+    const resources = await Resources.findOne({
+      userId: mongoose.Types.ObjectId(userId),
+    });
+
+    const updatedResources = [...resources.resources]
+
+    for (let i = 0; i < needForBuild.length; i++) {
+      if (resources.resources[i].amount - needForBuild[i].amount <= 0) {
+        return res.json({ bought: false, message: `У вас не достаньо ${resources.resources[i].name}` });
+      }
+      updatedResources[i].amount = resources.resources[i].amount - needForBuild[i].amount
+    }
+
+    await Resources.findOneAndUpdate({
+      userId: mongoose.Types.ObjectId(userId),
+    }, { resources: updatedResources });
+
+    const chapel = new Chapel({
+      userId: mongoose.Types.ObjectId(userId),
+      marketplaceId: mongoose.Types.ObjectId(marketplaceId),
+    })
+    await chapel.save();
+
+    const places = [];
+    places.push({
+      name: chapel.name,
+      expenses: chapel.expenses,
+      size: chapel.size,
+    })
+    await Marketplace.findOneAndUpdate({
+      _id: mongoose.Types.ObjectId(marketplaceId),
+    }, {$push: {places: places }});
+
+    tikResources.tikResources.map((resource)=>{
+      if(resource.name === 'Золото'){
+        return resource.value = resource.value - buildCost.buildings[5].expenses
       }
     })
 

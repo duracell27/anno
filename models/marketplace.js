@@ -7,6 +7,7 @@ const schema = new Schema({
     {
       name: { type: String },
       expenses: { type: Number },
+      size: { type: Number },
     },
   ],
   residentPlaces: [
