@@ -5,6 +5,7 @@ import { AuthContext } from "../context/AuthContext";
 export default function MainPage() {
   const auth = useContext(AuthContext);
   const [resources, setResources] = useState([]);
+  const [tikResourcesShow, setTikResourcesShow] = useState([]);
   const [werehouses, setWerehouses] = useState([]);
   const [marketplaces, setMarketplaces] = useState([]);
   const [buildingPricesInd, setBuildingPricesInd] = useState([]);
@@ -129,6 +130,22 @@ export default function MainPage() {
         [auth.userId]
       )
     }
+  });
+
+  const buildInMarketplaceHouses = useCallback((marketplaceId, buildingName) => {
+    if (buildingName === "СелянськаХата") {
+      axios.get(`/api/build/peasantHut?userId=${auth.userId}&marketplaceId=${marketplaceId}`).then(
+        (response) => {
+          if (response.data.bought) {
+            getResourcesList()
+            getResidentialIndustries();
+          } else {
+            alert(response.data.message)
+          }
+        },
+        [auth.userId]
+      )
+    }
 
   });
 
@@ -136,6 +153,7 @@ export default function MainPage() {
     axios.get(`/api/tik/?userId=${auth.userId}`).then((response) => {
       if(response.data.ok) {
         getResourcesList();
+        
       }
     });
   }
@@ -198,6 +216,35 @@ export default function MainPage() {
                   <div className="allBuildings">
                     {buildingPricesRes.map((buildPrice) => (
                       <div onClick={() => buildInMarketplace(marketplace._id, buildPrice.name)} className="building_wrap">
+                        <img src={require(`../img/buildings/${buildPrice.name}.webp`)} alt="icon" />
+                        <p>{buildPrice.name}</p>
+                        <div className="reresourcesNeedWrap">
+
+                          {buildPrice.resources.map((resource) => (
+                            <div className="resourcesNeed">
+                              <img className='small_img' src={require(`../img/resources/${resource.name}.webp`)} alt="icon" />
+                              <p className='small'>{resource.amount}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+
+                  </div>) : null}
+              </div>) : null}
+              <p>Зона жилих будинків</p>
+              {marketplace.residentPlaces.map((place) => (
+                <div className="werehouseBuildings_img">
+                  <img src={require(`../img/buildings/${place.name}.webp`)} alt="icon" />
+                </div>
+              ))}
+              {marketplace.residentPlaces.length < 76 ? (<div className="werehouseBuildings_img">
+                <img onClick={() => showBuildingsHandler(index)} src={require(`../img/buildings/Пусто.webp`)} alt="icon" />
+                <p>Побудувати</p>
+                {showBuildings.index === index && showBuildings.show ? (
+                  <div className="allBuildings">
+                    {buildingPricesHouse.map((buildPrice) => (
+                      <div onClick={() => buildInMarketplaceHouses(marketplace._id, buildPrice.name)} className="building_wrap">
                         <img src={require(`../img/buildings/${buildPrice.name}.webp`)} alt="icon" />
                         <p>{buildPrice.name}</p>
                         <div className="reresourcesNeedWrap">
