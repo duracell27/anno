@@ -6,6 +6,7 @@ const buildRouter = require("./routes/build.routes")
 const residentialIndustrial = require("./routes/residentialIndustrial.routes")
 const getBuildingsForBuild = require("./routes/getBuildingsForBuild.routes")
 const TikResources = require("./routes/tikResources.routes")
+const TikHouses = require("./routes/tikHouses.routes")
 
 const app = express()
 const PORT = 5000
@@ -17,6 +18,7 @@ app.use('/api/build', buildRouter)
 app.use('/api/buildings', residentialIndustrial)
 app.use('/api/buildingsforbuild', getBuildingsForBuild)
 app.use('/api/tik', TikResources)
+app.use('/api/tikHouses', TikHouses)
 const start = async () => {
     try {
         await mongoose.connect("mongodb+srv://shmidt:27071996ua@cluster0.2jpsu.mongodb.net/anno?retryWrites=true&w=majority",

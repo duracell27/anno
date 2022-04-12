@@ -162,7 +162,7 @@ router.get("/lumberjackHut", async (req, res) => {
       _id: mongoose.Types.ObjectId(werehouseId),
     }, {$push: {places: places }});
 
-    console.log('деревопродюс', lumberjackHutProduce.produceSpeed)
+  
 
     tikResources.tikResources.map((resource)=>{
       if(resource.name === 'Золото'){
@@ -191,6 +191,7 @@ router.get("/fishermanHut", async (req, res) => {
 
     const buildCost = await BuildingCost.findOne();
     const tikResources = await TikResources.findOne({userId: mongoose.Types.ObjectId(userId)});
+    const fishermanHutProduce = await FishermanHut.findOne({userId: mongoose.Types.ObjectId(userId)});
 
     const needForBuild = buildCost.buildings.filter(
       (build) => build.name === "ХижинаРибака"
@@ -231,9 +232,18 @@ router.get("/fishermanHut", async (req, res) => {
       _id: mongoose.Types.ObjectId(werehouseId),
     }, {$push: {places: places }});
 
+    // tikResources.tikResources.map((resource)=>{
+    //   if(resource.name === 'Золото'){
+    //     return resource.value = resource.value - buildCost.buildings[2].expenses
+    //   }
+    // })
+
     tikResources.tikResources.map((resource)=>{
       if(resource.name === 'Золото'){
-        return resource.value = resource.value - buildCost.buildings[2].expenses
+        resource.value = resource.value - buildCost.buildings[2].expenses
+      }
+      if(resource.name === 'Риба'){
+        resource.value = resource.value + fishermanHutProduce.produceSpeed
       }
     })
 
@@ -254,6 +264,7 @@ router.get("/cider", async (req, res) => {
 
     const buildCost = await BuildingCost.findOne();
     const tikResources = await TikResources.findOne({userId: mongoose.Types.ObjectId(userId)});
+    const ciserProduce = await Cider.findOne({userId: mongoose.Types.ObjectId(userId)});
 
     const needForBuild = buildCost.buildings.filter(
       (build) => build.name === "СидроВарня"
@@ -294,9 +305,18 @@ router.get("/cider", async (req, res) => {
       _id: mongoose.Types.ObjectId(werehouseId),
     }, {$push: {places: places }});
 
+    // tikResources.tikResources.map((resource)=>{
+    //   if(resource.name === 'Золото'){
+    //     return resource.value = resource.value - buildCost.buildings[4].expenses
+    //   }
+    // })
+
     tikResources.tikResources.map((resource)=>{
       if(resource.name === 'Золото'){
-        return resource.value = resource.value - buildCost.buildings[4].expenses
+        resource.value = resource.value - buildCost.buildings[4].expenses
+      }
+      if(resource.name === 'Сидр'){
+        resource.value = resource.value + ciserProduce.produceSpeed
       }
     })
 

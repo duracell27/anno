@@ -153,18 +153,24 @@ export default function MainPage() {
     axios.get(`/api/tik/?userId=${auth.userId}`).then((response) => {
       if(response.data.ok) {
         getResourcesList();
-        
+        setTikResourcesShow([...response.data.tikAmount.tikResources])
       }
     });
   }
+  const tikHouses = () => {
+    axios.get(`/api/tikHouses?userId=${auth.userId}`).then((response) => {
+      console.log(response.data)
+    });
+  };
 
 
-
-  useEffect(() => {
+    useEffect(() => {
     getResourcesList();
     getResidentialIndustries()
     getBuildingsForBuild();
-    
+    tikResources()
+    tikHouses()
+
     setInterval(()=>{
       tikResources()
     }, 60000)
@@ -191,6 +197,9 @@ export default function MainPage() {
               </div>
             </div>
             <span>{resource.amount}</span>
+            {tikResourcesShow[index]?.value <0 ?
+             (<span className='tikResource' style={{color: 'red'}} >{tikResourcesShow[index]?.value}</span>) :
+             (<span className='tikResource' >+{tikResourcesShow[index]?.value}</span>)}
           </div>
         ))}
       </div>
