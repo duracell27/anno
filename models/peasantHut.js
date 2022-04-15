@@ -7,6 +7,7 @@ const schema = new Schema({
     expenses: {type: Number, default: 0},
     size: {type: Number, default: 9},
     peasant: {type: Number, default: 1},
+    basePeasant: {type: Number, default: 1},
     peasantMax: {type: Number, default: 8},
     needs: [
         {
@@ -14,7 +15,8 @@ const schema = new Schema({
             percent: {type: Number, default: 0}
         }
     ],
-    tax: {type: Number, default: 59}
+    tax: {type: Number, default: 59},
+    baseTax: {type: Number, default: 59}
 
 
 })

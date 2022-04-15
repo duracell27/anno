@@ -169,13 +169,13 @@ router.get("/lumberjackHut", async (req, res) => {
         resource.value = resource.value - buildCost.buildings[1].expenses
       }
       if(resource.name === 'Дерево'){
-        console.log('дерево')
+        
         resource.value = resource.value + lumberjackHutProduce.produceSpeed
       }
     })
-
+    
     await TikResources.findOneAndUpdate({userId: mongoose.Types.ObjectId(userId)}, {tikResources: tikResources.tikResources});
-
+    
     res.json({ bought: true, message: `Хижину Лісника побудовано` });
   } catch (err) {
     res
@@ -246,9 +246,9 @@ router.get("/fishermanHut", async (req, res) => {
         resource.value = resource.value + fishermanHutProduce.produceSpeed
       }
     })
-
+   
     await TikResources.findOneAndUpdate({userId: mongoose.Types.ObjectId(userId)}, {tikResources: tikResources.tikResources});
-
+    
     res.json({ bought: true, message: `Хижину Рибака побудовано` });
   } catch (err) {
     res
@@ -319,9 +319,9 @@ router.get("/cider", async (req, res) => {
         resource.value = resource.value + ciserProduce.produceSpeed
       }
     })
-
+    
     await TikResources.findOneAndUpdate({userId: mongoose.Types.ObjectId(userId)}, {tikResources: tikResources.tikResources});
-
+   
     res.json({ bought: true, message: `СидроВарня побудовано` });
   } catch (err) {
     res
@@ -397,6 +397,9 @@ router.get("/peasantHut", async (req, res) => {
     const { userId, marketplaceId } = req.query;
 
     const buildCost = await BuildingCost.findOne();
+    const tikResources = await TikResources.find({
+      userId: mongoose.Types.ObjectId(userId),
+    });
 
     const needForBuild = buildCost.buildings.filter(
       (build) => build.name === "СелянськаХата"
@@ -445,8 +448,21 @@ router.get("/peasantHut", async (req, res) => {
     await Marketplace.findOneAndUpdate({
       _id: mongoose.Types.ObjectId(marketplaceId),
     }, {$push: {residentPlaces: places }});
-
-
+    
+    tikResources[0].tikResources.map((resource) => {
+      if (resource.name === 'Золото') {
+        resource.value = resource.value + peasantHut.baseTax
+      }
+      if (resource.name === 'Риба') {
+        resource.value = resource.value - 0.01
+      }
+      if (resource.name === 'Сидр') {
+        resource.value = resource.value - 0.0045
+      }
+    })
+    
+    await TikResources.findOneAndUpdate({ userId: mongoose.Types.ObjectId(userId) }, { tikResources: tikResources[0].tikResources });
+    
     res.json({ bought: true, message: `СидроВарня побудовано` });
   } catch (err) {
     res

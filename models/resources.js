@@ -9,6 +9,7 @@ const schema = new Schema({
     }
   ],
   resourcesCapacity: { type: Number, default: 40 },
+  peoples: { type: Number, default: 0 },
 });
 
 module.exports = model("Resources", schema);

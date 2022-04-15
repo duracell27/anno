@@ -17,7 +17,7 @@ router.get("/", async (req, res) => {
     });
 
 
-    const tikAmount = await TikResources.find({
+    const tikResources = await TikResources.find({
       userId: mongoose.Types.ObjectId(userId),
     });
 
@@ -25,71 +25,130 @@ router.get("/", async (req, res) => {
       userId: mongoose.Types.ObjectId(userId),
     });
 
-    let resourceFish = resources[0].resources.filter((resource) => resource.name === 'Риба')
-    let resourceCider = resources[0].resources.filter((resource) => resource.name === 'Сидр')
 
-    // let population = 0
-
+    let population = 0
+    
+    //перерахунок потреб 
     for (let i = 0; i < housesList.length; i++) {
 
       const marketplace = await Marketplace.findOne({
         _id: mongoose.Types.ObjectId(housesList[i].marketplaceId),
       });
+      
 
-      let chapelExist =  marketplace.places.filter((place)=>place.name === 'Часовня')
-      console.log('chapel', chapelExist)
+      let resourceFish = resources[0].resources.filter((resource) => resource.name === 'Риба')
+      let resourceCider = resources[0].resources.filter((resource) => resource.name === 'Сидр')
+      let chapelExist = marketplace.places.filter((place) => place.name === 'Часовня')
+      let peasantHapiness = 0
 
       if (resourceFish[0].amount >= 0.5) {
         for (var key in housesList[i].needs) {
           if (housesList[i].needs[key].name === 'Риба') {
-            housesList[i].needs[key].percent = housesList[i].needs[key].percent + 3
+            if (housesList[i].needs[key].percent + 3 > 100) {
+              housesList[i].needs[key].percent = 100
+              peasantHapiness += housesList[i].needs[key].percent
+            } else {
+              housesList[i].needs[key].percent = housesList[i].needs[key].percent + 3
+              peasantHapiness += housesList[i].needs[key].percent
+            }
+          }
+        }
+      } else {
+        for (var key in housesList[i].needs) {
+          if (housesList[i].needs[key].name === 'Риба') {
+            if (housesList[i].needs[key].percent + 3 > 100) {
+              housesList[i].needs[key].percent = 0
+              peasantHapiness += housesList[i].needs[key].percent
+            } else {
+              housesList[i].needs[key].percent = housesList[i].needs[key].percent - 3
+              peasantHapiness += housesList[i].needs[key].percent
+            }
           }
         }
       }
+      
       if (resourceCider[0].amount >= 0.5) {
         for (var key in housesList[i].needs) {
           if (housesList[i].needs[key].name === 'Сидр') {
-            housesList[i].needs[key].percent = housesList[i].needs[key].percent + 3
+            if (housesList[i].needs[key].percent + 3 > 100) {
+              housesList[i].needs[key].percent = 100
+              peasantHapiness += housesList[i].needs[key].percent
+            } else {
+              housesList[i].needs[key].percent = housesList[i].needs[key].percent + 3
+              peasantHapiness += housesList[i].needs[key].percent
+            }
           }
         }
-      }
-      // доробити перевірку на chapel
-      if (resourceCider[0].amount >= 0.5) {
+      } else {
         for (var key in housesList[i].needs) {
           if (housesList[i].needs[key].name === 'Сидр') {
-            housesList[i].needs[key].percent = housesList[i].needs[key].percent + 3
+            if (housesList[i].needs[key].percent - 3 < 0) {
+              housesList[i].needs[key].percent = 0
+              peasantHapiness += housesList[i].needs[key].percent
+            } else {
+              housesList[i].needs[key].percent = housesList[i].needs[key].percent - 3
+              peasantHapiness += housesList[i].needs[key].percent
+            }
           }
         }
       }
 
+      
+      if (chapelExist) {
+        for (var key in housesList[i].needs) {
+          if (housesList[i].needs[key].name === 'Часовня') {
+            if (housesList[i].needs[key].percent < 100) {
+              housesList[i].needs[key].percent = housesList[i].needs[key].percent + 100
+              peasantHapiness += housesList[i].needs[key].percent
+            }
+          }
+        }
+      }
+      
+      //розрахунок населення
+      let peasantHapinessPercent = peasantHapiness / 3
+      
+      let peasantNow = Math.round(peasantHapinessPercent * housesList[i].peasantMax / 100)
+      
+      let peasantDiference = peasantNow - housesList[i].peasant
+      
+      population += peasantNow
+      
+      // розрахунок tax
+      let taxNow = housesList[i].baseTax * (peasantHapinessPercent / 200)
+      
+      let taxDiference = taxNow - housesList[i].tax
+
+      if (peasantDiference) {
+        tikResources[0].tikResources.map((resource) => {
+          if (resource.name === 'Риба') {
+            resource.value = resource.value - peasantDiference * 0.01
+          }
+          if (resource.name === 'Сидр') {
+            resource.value = resource.value - peasantDiference * 0.0045
+          }
+        })
+        await TikResources.findOneAndUpdate({ userId: mongoose.Types.ObjectId(userId) }, { tikResources: tikResources[0].tikResources });
+      }
+      
+      if (taxDiference) {
+        tikResources[0].tikResources.map((resource) => {
+          if (resource.name === 'Золото') {
+            resource.value = resource.value + taxDiference
+          }
+        })
+        await TikResources.findOneAndUpdate({ userId: mongoose.Types.ObjectId(userId) }, { tikResources: tikResources[0].tikResources });
+      }
+  
       await PeasantHut.findOneAndUpdate({
         _id: mongoose.Types.ObjectId(housesList[i]._id),
-      }, { $set: { needs: [...housesList[i].needs] } });
+      }, { $set: { needs: [...housesList[i].needs], peasant: peasantNow, tax: taxNow } }, { multi: true });
+      
     }
+    //перерахунок потреб закінчено
 
-    // console.log('newhouselist1', housesList[0].needs)
-    // console.log('newhouselist2', housesList[1].needs)
-    // console.log('newhouselist3', housesList[2].needs)
-    // console.log('newhouselist4', housesList[3].needs)
 
-    // const updatedResources = [...resourcesList[0].resources]
-
-    // for (let i = 0; i < resourcesList[0].resources.length; i++) {
-
-    //   if (resourcesList[0].resources[i].name === tikAmount[0].tikResources[i].name) {
-    //     if(resourcesList[0].resources[i].amount + tikAmount[0].tikResources[i].value > resourcesList[0].resourcesCapacity && resourcesList[0].resources[i].name !== 'Золото'){
-    //       updatedResources[i].amount = resourcesList[0].resourcesCapacity
-    //     }else{
-    //       updatedResources[i].amount = resourcesList[0].resources[i].amount + tikAmount[0].tikResources[i].value
-    //     }
-    //   }
-    // }
-
-    // await Resources.findOneAndUpdate({
-    //   userId: mongoose.Types.ObjectId(userId),
-    // }, { resources: updatedResources });
-
-    res.json({ ok: true });
+    res.json({ ok: true, population});
 
   } catch (err) {
     res

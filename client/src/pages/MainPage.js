@@ -159,7 +159,7 @@ export default function MainPage() {
   }
   const tikHouses = () => {
     axios.get(`/api/tikHouses?userId=${auth.userId}`).then((response) => {
-      console.log(response.data)
+  
     });
   };
 
@@ -173,6 +173,7 @@ export default function MainPage() {
 
     setInterval(()=>{
       tikResources()
+      tikHouses()
     }, 60000)
     
   }, []);
@@ -196,10 +197,10 @@ export default function MainPage() {
                 ></div>
               </div>
             </div>
-            <span>{resource.amount}</span>
+            <span>{resource.amount.toFixed(0)}</span>
             {tikResourcesShow[index]?.value <0 ?
-             (<span className='tikResource' style={{color: 'red'}} >{tikResourcesShow[index]?.value}</span>) :
-             (<span className='tikResource' >+{tikResourcesShow[index]?.value}</span>)}
+             (<span className='tikResource' style={{color: 'red'}} >{tikResourcesShow[index]?.value.toFixed(2)}</span>) :
+             (<span className='tikResource' >+{tikResourcesShow[index]?.value.toFixed(2)}</span>)}
           </div>
         ))}
       </div>
@@ -241,6 +242,7 @@ export default function MainPage() {
 
                   </div>) : null}
               </div>) : null}
+              
               <p>Зона жилих будинків</p>
               {marketplace.residentPlaces.map((place) => (
                 <div className="werehouseBuildings_img">

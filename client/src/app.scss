@@ -77,7 +77,7 @@
 
   .werehouseBuildings {
     display: flex;
-
+    flex-direction: column;
     .werehouseBuildings_img {
       position: relative;
 
