@@ -9,7 +9,7 @@ app.use(express.json())
 app.use('/api/auth', authRouter)
 const start = async () => {
     try {
-        await mongoose.connect("mongodb+srv://shmidt:27071996ua@cluster0.2jpsu.mongodb.net/anno?retryWrites=true&w=majority",
+        await mongoose.connect("mongodb+srv://SHMIDT:27071996uA@cluster0.jjwrs.mongodb.net/bogdan?retryWrites=true&w=majority",
             { useNewUrlParser: true })
         app.listen(PORT, () => {
             console.log(`Server started on port ${PORT}`);

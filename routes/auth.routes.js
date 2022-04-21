@@ -17,13 +17,13 @@ router.post('/registr', [
             return res.json({ errors: errors.array(), message: 'Некоректно заповнені дані'})
         }
 
-        const { email, password } = req.body
+        const { email, password, name } = req.body
         const checkExistsUser = await User.findOne({ email: email })
         if (checkExistsUser) {
             return res.json({ message: 'Такий користувач вже існує' })
         }
         const hashedPassword = await bcrypt.hash(password, 12)
-        const user = new User({ email, password: hashedPassword })
+        const user = new User({ email, password: hashedPassword, name })
         await user.save()
         res.status(201).json({ message: 'Реєстрація успішна' })
     } catch (err) {
